@@ -1,0 +1,115 @@
+---
+title: "R_cellcount"
+author: "Ranmaru Shimoda"
+date: "2023-04-10"
+output: html_document
+---
+
+```{r}
+#Import library
+#相関指数：https://statsandr.com/blog/correlation-coefficient-and-correlation-test-in-r/
+library(ggstatsplot)
+library(ggplot2)
+library(ggpubr)
+```
+
+```{r}
+#Import data
+df_cor1 <- read.table("~/Downloads/bitolab_data/cor1_aftersort.txt")
+df_cor2 <- read.table("~/Downloads/bitolab_data/cor2_beforesort.txt")
+View(df_cor1)
+```
+
+```{r}
+#Calculate Pearson Score
+pearson_score_postsort = cor(df_cor1$Countess3_FL, df_cor1$Microscope, method = "pearson") 
+pearson_score_priorsort = cor(df_cor2$Countess3_FL, df_cor1$Microscope, method = "pearson") 
+```
+
+```{r}
+#Calculate Round to three decimals
+pearson_score_postsort_3decimals <- round(pearson_score_postsort,
+  digits = 3 # rounded to 3 decimals
+)
+
+pearson_score_priorsort_3decimals <- round(pearson_score_priorsort,
+  digits = 3 # rounded to 3 decimals
+)
+
+```
+
+```{r}
+#Calculate Round to three decimals
+pearson_score_postsort_3decimals <- round(pearson_score_postsort,
+  digits = 3 # rounded to 3 decimals
+)
+
+pearson_score_priorsort_3decimals <- round(pearson_score_priorsort,
+  digits = 3 # rounded to 3 decimals
+)
+```
+
+```{r}
+#Plot scatterplot for postsort
+scatter_postsort <- ggplot(df_cor1) +
+  aes(x = Microscope, y = Countess3_FL) +
+  geom_point() +
+  xlim(0, 8) +
+  ylim(0, 8) +
+  geom_smooth(method=lm, se=FALSE, fullrange=TRUE) +
+  theme_minimal() %+replace%    #replace elements we want to change
+  theme(
+      plot.title = element_text(size = 15,   #Title font size
+                   face = "bold"),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      axis.line = element_line(size = 0.5, colour = "black"),
+      axis.ticks = element_blank(),          #strip axis tick
+      axis.title = element_text(             #axis titles
+                   size = 12,                #font size
+                   face="bold"),             #font bold
+      axis.text = element_text(              #axis text
+                   size = 9,                 #font size
+                   face="bold"),
+      axis.text.x = element_text(            #margin for axis text
+                    margin=margin(5, b = 10)))
+scatter_postsort <- scatter_postsort + ggtitle("Comparing Cell Count After FACS Sort") + geom_abline(intercept = 0, slope = 1, color = "grey") + stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), label.x = 6, label.y = 15) + scale_x_continuous(expand = c(0, 0), limits = c(-0.5,25)) + scale_y_continuous(expand = c(0, 0), limits = c(-0.5, 25)) + stat_regline_equation(label.x=6, label.y=13)
+scatter_postsort
+ggsave(filename = "postsort_correlation.png", plot = scatter_postsort)
+#stat_cor1 <- cor.test(df_cor1$Countess3_FL, df_cor1$Microscope, method = "pearson", conf.level = 0.95)
+#View(stat_cor1)
+```
+
+```{r}
+#Plot scatterplot for priorsort
+scatter_priorsort <- ggplot(df_cor2) +
+  aes(x = Microscope, y = Countess3_FL) +
+  geom_point() +
+  xlim(0, 30) +
+  ylim(0, 30) +
+  geom_smooth(method=lm, se=FALSE, fullrange=TRUE) +
+  theme_minimal() %+replace%    #replace elements we want to change
+  theme(
+      plot.title = element_text(size = 15,   #Title font size
+                   face = "bold"),
+      axis.line = element_line(size = 0.5, colour = "black"),
+      axis.ticks = element_blank(),          #strip axis tick
+      axis.title = element_text(             #axis titles
+                   size = 12,                #font size
+                   face="bold"),             #font bold
+      axis.text = element_text(              #axis text
+                   size = 9,                 #font size
+                   face="bold"),
+      axis.text.x = element_text(            #margin for axis text
+                    margin=margin(5, b = 10)))
+scatter_priorsort <- scatter_priorsort + ggtitle("Comparing Cell Count Prior to FACS Sort") + geom_abline(intercept = 0, slope = 1, color = "grey") + stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), label.x = 52, label.y = 130 ) + scale_x_continuous(expand = c(0, 0), limits = c(0,140)) + scale_y_continuous(expand = c(0, 0), limits = c(0, 140)) + stat_regline_equation(label.x = 52, label.y = 120 )
+scatter_priorsort
+ggsave(filename = "priorsort_correlation.png", plot = scatter_priorsort)
+#stat_cor2 <- cor.test(df_cor2$Countess3_FL, df_cor2$Microscope, method = "pearson", conf.level = 0.95)
+View(stat_cor2)
+```
+
+```{r}
+
+```
+
